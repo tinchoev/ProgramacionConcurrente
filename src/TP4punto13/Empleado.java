@@ -42,9 +42,12 @@ public class Empleado implements Runnable {
     public void run() {
         System.out.println(color+"Soy un empleado");
         acercarseAConfiteria();
-        conf.entrarAConfiteria(color);
-        conf.solicitarAtencion(color);
-        comer();
+        if (conf.entrarAConfiteria(color)) {
+            conf.solicitarAtencion(color);
+            comer();
+        } else {
+            System.out.println(color+"Confitería ocupada");
+        }
         conf.salirDeConfiteria(color);
     }
 }
