@@ -26,14 +26,12 @@ public class Confiteria {
     
     public void esperarEmpleado(String color) {
         System.out.println(color+"Estoy esperando un empleado");
-        semMozo.release();
+        //semMozo.release();
     }
     
-    public void entrarAConfiteria(String color) {
+    public boolean entrarAConfiteria(String color) {
         System.out.println(color+"Entrando a la confitería");
-        try {
-            semConfiteria.acquire();}
-        catch (InterruptedException ex) {}
+        return semConfiteria.tryAcquire();
     }
     
     public void solicitarAtencion(String color) {
@@ -50,10 +48,15 @@ public class Confiteria {
             semEmpleado.acquire();
         } catch (InterruptedException ex) {}
         System.out.println(color+"Atendiendo empleado");
+        semMozo.release();
     }
     
     public void terminarAtencion(String color) {
+        try {
+            semConfiteria.acquire();
+        } catch (InterruptedException ex) {}
         System.out.println(color+"Terminé de atender al empleado");
+        semConfiteria.release();
     }
     
     public void salirDeConfiteria(String color) {
@@ -85,6 +88,10 @@ public class Confiteria {
         System.out.println(color+"Solicitando atención");
         lockMozo.unlock();
         lockEmpleado.lock();
+    }
+    
+    public void atender(String color) {
+        System.out.println(color+"Atendiendo empleado");
     }
     
     public void terminarAtencion(String color) {
