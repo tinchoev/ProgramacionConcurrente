@@ -6,101 +6,58 @@
 package TP4punto13;
 
 import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
  *
  * @author Martín
  */
 public class Confiteria {
-    private Semaphore semMozo;
-    private Semaphore semEmpleado;
-    private Semaphore semConfiteria;
+    private Semaphore semConfiteria = new Semaphore(1, true);
+    private Semaphore semMozo = new Semaphore(0, true);
+    private Semaphore semCocinero = new Semaphore(0, true);
+    private Semaphore semServicio = new Semaphore(0, true);
+    private Semaphore semEsperaCocina = new Semaphore(0, true);
     
     public Confiteria() {
-        semMozo = new Semaphore(0);
-        semEmpleado = new Semaphore(0);
-        semConfiteria = new Semaphore(1);
+        
     }
     
-    public void esperarEmpleado(String color) {
-        System.out.println(color+"Estoy esperando un empleado");
-        //semMozo.release();
-    }
-    
-    public boolean entrarAConfiteria(String color) {
-        System.out.println(color+"Entrando a la confitería");
-        return semConfiteria.tryAcquire();
-    }
-    
-    public void solicitarAtencion(String color) {
-        System.out.println(color+"Solicitando atención");
-        try {
-            semEmpleado.release();
-            semMozo.acquire();
+    public void acercarse(String color) {
+        if (semConfiteria.tryAcquire()) {
+            System.out.println(color+"La confitería está libre, así que entro");
+            semMozo.release();
+            try {
+                semServicio.acquire();//Espera que el mozo le sirva la comida
+                System.out.println(color+"Empleado está comiendo");
+                Thread.sleep(15000);
+                System.out.println(color+"Empleado terminó de comer y deja la cafetería");
+                semConfiteria.release();//Libera la confiteria
+            } catch (InterruptedException ex) {}
+        } else {
+            System.out.println(color+"La confitería está ocupada así que vuelvo al trabajo");
         }
-        catch (InterruptedException ex) {}
     }
     
-    public void atender(String color) {
+    public void trabajarMozo(String color) {
+        System.out.println(color+"Esperando empleado");
         try {
-            semEmpleado.acquire();
+            semMozo.acquire();//Espera a que lo libere un empleado
+            System.out.println(color+"LLega un cliente, el mozo lo atiende y le indica al cocinero el pedido");
+            semCocinero.release();//Libera al cocinero para que cocine
+            semEsperaCocina.acquire();//Espera a que el cocinero le entregue la comida
+            System.out.println(color+"El mozo le sirve la comida al empleado");
+            semServicio.release();//Le sirve la comida al empleado
         } catch (InterruptedException ex) {}
-        System.out.println(color+"Atendiendo empleado");
-        semMozo.release();
     }
     
-    public void terminarAtencion(String color) {
+    public void trabajarCocinero(String color) {
+        System.out.println(color+"El cocinero espera a que el mozo le indique qué cocinar");
         try {
-            semConfiteria.acquire();
+            semCocinero.acquire();//Espera a que el mozo le indique qué cocinar
+            System.out.println(color+"El cocinero está cocinando");
+            Thread.sleep(10000);
+            System.out.println(color+"El cocinero terminó de cocinar");
+            semEsperaCocina.release();//Le entrega la comida al mozo para que la sirva
         } catch (InterruptedException ex) {}
-        System.out.println(color+"Terminé de atender al empleado");
-        semConfiteria.release();
     }
-    
-    public void salirDeConfiteria(String color) {
-        System.out.println(color+"Estoy saliendo de la confitería");
-        semConfiteria.release();
-    }
-    
-    /*private Lock lockMozo;
-    private Lock lockEmpleado;
-    private Lock lockConfiteria;
-    
-    public Confiteria() {
-        lockMozo = new ReentrantLock();
-        lockEmpleado = new ReentrantLock();
-        lockConfiteria = new ReentrantLock();
-    }
-    
-    public void esperarEmpleado(String color) {
-        System.out.println(color+"Estoy esperando un empleado");
-        lockMozo.lock();
-    }
-    
-    public void entrarAConfiteria(String color) {
-        System.out.println(color+"Entrando a la confitería");
-        lockConfiteria.lock();
-    }
-    
-    public void solicitarAtencion(String color) {
-        System.out.println(color+"Solicitando atención");
-        lockMozo.unlock();
-        lockEmpleado.lock();
-    }
-    
-    public void atender(String color) {
-        System.out.println(color+"Atendiendo empleado");
-    }
-    
-    public void terminarAtencion(String color) {
-        System.out.println(color+"Terminé de atender al empleado");
-        lockEmpleado.unlock();
-    }
-    
-    public void salirDeConfiteria(String color) {
-        System.out.println(color+"Estoy saliendo de la confitería");
-        lockConfiteria.unlock();
-    }*/
 }

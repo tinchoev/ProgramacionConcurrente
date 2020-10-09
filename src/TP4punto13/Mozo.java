@@ -20,11 +20,9 @@ public class Mozo implements Runnable {
     
     @Override
     public void run() {
+        System.out.println(color+"Soy el mozo");
         while (true) {
-            System.out.println(color+"Soy el mozo");
-            conf.esperarEmpleado(color);
-            conf.atender(color);
-            conf.terminarAtencion(color);
+            conf.trabajarMozo(color);
         }
     }
 }

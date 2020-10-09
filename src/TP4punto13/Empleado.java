@@ -27,27 +27,20 @@ public class Empleado implements Runnable {
         }
     }
     
-    private void comer() {
+    private void trabajar() {
         try {
-            System.out.println(color+"Estoy comiendo");
-            Thread.sleep(1000);
-        } catch (InterruptedException ex) {
-            
-        } finally {
-            System.out.println(color+"Muchas gracias mozo!");
-        }
+            System.out.println(color+"Estoy trabajando");
+            Thread.sleep(30000);
+        } catch (InterruptedException ex) {}
     }
     
     @Override
     public void run() {
         System.out.println(color+"Soy un empleado");
-        acercarseAConfiteria();
-        if (conf.entrarAConfiteria(color)) {
-            conf.solicitarAtencion(color);
-            comer();
-        } else {
-            System.out.println(color+"Confitería ocupada");
+        while (true) {
+            trabajar();
+            System.out.println(color+"Me acerco a la confiteria");
+            conf.acercarse(color);
         }
-        conf.salirDeConfiteria(color);
     }
 }
