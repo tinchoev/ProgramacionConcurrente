@@ -29,7 +29,7 @@ public class Confiteria {
             try {
                 semServicio.acquire();//Espera que el mozo le sirva la comida
                 System.out.println(color+"Empleado está comiendo");
-                Thread.sleep(15000);
+                Thread.sleep(1500);
                 System.out.println(color+"Empleado terminó de comer y deja la cafetería");
                 semConfiteria.release();//Libera la confiteria
             } catch (InterruptedException ex) {}
@@ -42,7 +42,7 @@ public class Confiteria {
         System.out.println(color+"Esperando empleado");
         try {
             semMozo.acquire();//Espera a que lo libere un empleado
-            System.out.println(color+"LLega un cliente, el mozo lo atiende y le indica al cocinero el pedido");
+            System.out.println(color+"Llega un cliente, el mozo lo atiende y le indica al cocinero el pedido");
             semCocinero.release();//Libera al cocinero para que cocine
             semEsperaCocina.acquire();//Espera a que el cocinero le entregue la comida
             System.out.println(color+"El mozo le sirve la comida al empleado");
@@ -55,7 +55,7 @@ public class Confiteria {
         try {
             semCocinero.acquire();//Espera a que el mozo le indique qué cocinar
             System.out.println(color+"El cocinero está cocinando");
-            Thread.sleep(10000);
+            Thread.sleep(1000);
             System.out.println(color+"El cocinero terminó de cocinar");
             semEsperaCocina.release();//Le entrega la comida al mozo para que la sirva
         } catch (InterruptedException ex) {}

@@ -30,17 +30,17 @@ public class Empleado implements Runnable {
     private void trabajar() {
         try {
             System.out.println(color+"Estoy trabajando");
-            Thread.sleep(30000);
+            Thread.sleep(3000);
         } catch (InterruptedException ex) {}
     }
     
     @Override
     public void run() {
         System.out.println(color+"Soy un empleado");
-        while (true) {
+        //while (true) {
             trabajar();
             System.out.println(color+"Me acerco a la confiteria");
             conf.acercarse(color);
-        }
+        //}
     }
 }
