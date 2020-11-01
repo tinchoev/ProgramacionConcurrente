@@ -21,7 +21,7 @@ public class Taxi {
     public Taxi(){
         semTaxi = new Semaphore(1);
         semTaxista = new Semaphore(0);
-        semCliente = new Semaphore(1);
+        semCliente = new Semaphore(3);
     }
     
     public boolean entrar(String unNombre) {
@@ -33,7 +33,8 @@ public class Taxi {
         System.out.println("Soy el cliente "+unNombre+", estoy solicitando un viaje");
         semTaxista.release();
         try {
-            semCliente.acquire();
+            semCliente.acquire(3);
+            System.out.println("Obtuve los 3 permisos");
         } catch (InterruptedException ex) {
         }
     }
