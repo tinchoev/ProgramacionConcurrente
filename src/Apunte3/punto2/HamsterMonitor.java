@@ -5,6 +5,9 @@
  */
 package Apunte3.punto2;
 
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+
 /**
  *
  * @author Martín
@@ -20,6 +23,11 @@ public class HamsterMonitor implements Runnable{
     }
 
     public void run() {
+        try {
+            Thread.sleep(((long) Math.random()+1)*1000);
+        } catch (InterruptedException ex) {
+            
+        }
         //while (true) {
             miJaula.comer(miNombre);
             miJaula.rodar(miNombre);
