@@ -37,7 +37,7 @@ public class Buffer {
         System.out.println(Thread.currentThread().getName()+" consumió un dato");
         datos.sacar();
         cantDatos--;
-        this.notify();
+        this.notifyAll();
     }
 
     //Parte Productor
@@ -56,6 +56,6 @@ public class Buffer {
         System.out.println(Thread.currentThread().getName()+" produjo un dato");
         datos.poner("dato");
         cantDatos++;
-        this.notify();
+        this.notifyAll();
     }
 }
