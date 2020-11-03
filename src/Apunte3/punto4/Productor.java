@@ -23,7 +23,7 @@ public class Productor implements Runnable {
         while (true) {
             miBuffer.producir();
             try {
-                Thread.sleep(500);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Consumidor.class.getName()).log(Level.SEVERE, null, ex);
             }

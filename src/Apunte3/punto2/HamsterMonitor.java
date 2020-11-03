@@ -5,8 +5,6 @@
  */
 package Apunte3.punto2;
 
-import java.lang.System.Logger;
-import java.lang.System.Logger.Level;
 
 /**
  *

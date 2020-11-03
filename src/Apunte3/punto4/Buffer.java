@@ -4,9 +4,9 @@
  * and open the template in the editor.
  */
 package Apunte3.punto4;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.lang.System.Logger;
+import java.lang.System.Logger.Level;
+import lineales.dinamicas.Cola;
 
 /**
  *
@@ -14,26 +14,28 @@ import java.util.logging.Logger;
  */
 public class Buffer {
     
-    private int cantDatos;
+    private Cola datos;
     private int cantMaxDatos;
+    private int cantDatos;
 
     //Constructor
-    public Buffer(int cantMaxDatos) {    
-        this.cantDatos = 0;
-        this.cantMaxDatos = cantMaxDatos;
+    public Buffer(int unaCantMaxDatos) {    
+        this.datos = new Cola();
+        cantMaxDatos = unaCantMaxDatos;
+        cantDatos = 0;
     }
 
     //Parte Consumidor
     public synchronized void consumir() {
         try {
-            while (cantDatos <= 0) {
+            while (datos.esVacia()) {
                 System.out.println(Thread.currentThread().getName() + " no tiene datos que consumir");
                 this.wait();
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(Buffer.class.getName()).log(Level.SEVERE, null, ex);
         }
         System.out.println(Thread.currentThread().getName()+" consumió un dato");
+        datos.sacar();
         cantDatos--;
         this.notify();
     }
@@ -46,9 +48,13 @@ public class Buffer {
                 this.wait();
             }
         } catch (InterruptedException ex) {
-            Logger.getLogger(Buffer.class.getName()).log(Level.SEVERE, null, ex);
+            //Logger.getLogger(Buffer.class.getName()).log(Level.SEVERE, null, ex);
         }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e){}
         System.out.println(Thread.currentThread().getName()+" produjo un dato");
+        datos.poner("dato");
         cantDatos++;
         this.notify();
     }
