@@ -27,7 +27,7 @@ public class GestorSala {
     
     public synchronized void entrarSala() {
         try {
-            while (cantPersonas >= maxPersonas && jubiladosEsperando > 0) {
+            while (cantPersonas >= maxPersonas || jubiladosEsperando > 0) {
                 System.out.println(Thread.currentThread().getName()+": Sala no disponible");
                 this.wait();
             }
