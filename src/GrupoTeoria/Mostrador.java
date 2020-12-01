@@ -22,14 +22,8 @@ public class Mostrador {
     private int pesoMaxCaja;
     private boolean hayCaja;
     private boolean requerirRetiro;
-    private Lista cinta;
-    private int capacidadCinta;
     private Caja unaCaja;
-    private Lock lockCinta;
     private Lock lockCaja;
-    //private Lock lockHornos;
-    private Condition esperaHorno;
-    private Condition esperaEmpTomar;
     private Condition esperaEmpSoltar;
     private Condition esperaBrazoRetiro;
     private Condition esperaBrazoRepone;
@@ -37,16 +31,10 @@ public class Mostrador {
 
     public Mostrador(int pesoMaxCaja, int capacidadCinta) {
         this.pesoMaxCaja = pesoMaxCaja;
-        this.capacidadCinta = capacidadCinta;
         hayCaja = true;
         requerirRetiro = false;
-        cinta = new Lista();
         unaCaja = new Caja();
-        lockCinta = new ReentrantLock();
         lockCaja = new ReentrantLock();
-        lockCinta = new ReentrantLock();
-        esperaHorno = this.lockCinta.newCondition();
-        esperaEmpTomar = this.lockCinta.newCondition();
         esperaEmpSoltar = this.lockCaja.newCondition();
         esperaBrazoRetiro = this.lockCaja.newCondition();
         esperaBrazoRepone = this.lockCaja.newCondition();
@@ -56,9 +44,9 @@ public class Mostrador {
     
     
     public void cocinarPastel(int peso) {
-        System.out.println(Thread.currentThread().getName()+": creado pastel de "+peso);        
         try {
             cola.put(peso);
+            System.out.println(Thread.currentThread().getName()+": creado pastel de "+peso);
         } catch (InterruptedException ex) {
             Logger.getLogger(Mostrador.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -68,6 +56,7 @@ public class Mostrador {
         int salida = -1;
         try {
             salida = (int) cola.take();
+            System.out.println(Thread.currentThread().getName()+": Tomé pastel de "+salida+", intento soltarlo");
         } catch (InterruptedException ex) {
             Logger.getLogger(Mostrador.class.getName()).log(Level.SEVERE, null, ex);
         }

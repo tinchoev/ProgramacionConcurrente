@@ -27,11 +27,9 @@ public class Empaquetador implements Runnable {
             } catch (InterruptedException ex) {
                 Logger.getLogger(Mostrador.class.getName()).log(Level.SEVERE, null, ex);
             } finally {
-                System.out.println(Thread.currentThread().getName()+": Intento tomar pastel");
                 peso = miMostrador.tomarPastel();
-                System.out.println(Thread.currentThread().getName()+": Tomé pastel de "+peso+", intento soltarlo");
+                //System.out.println(Thread.currentThread().getName()+": Tomé pastel de "+peso+", intento soltarlo");
                 miMostrador.soltarPastel(peso);
-                //System.out.println(Thread.currentThread().getName()+": solté pastel");
             }
         }
     }
