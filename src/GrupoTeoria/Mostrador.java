@@ -5,14 +5,13 @@
  */
 package GrupoTeoria;
 import GrupoTeoria.*;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lineales.dinamicas.Lista;
 
 /**
  *
@@ -27,7 +26,9 @@ public class Mostrador {
     private Condition esperaEmpSoltar;
     private Condition esperaBrazoRetiro;
     private Condition esperaBrazoRepone;
-    private BlockingQueue<Integer> cola;
+    private BlockingQueue<Integer> cinta;
+    private Lock lockCrear;
+    private Lock lockSacar;
 
     public Mostrador(int pesoMaxCaja, int capacidadCinta) {
         this.pesoMaxCaja = pesoMaxCaja;
@@ -38,31 +39,37 @@ public class Mostrador {
         esperaEmpSoltar = this.lockCaja.newCondition();
         esperaBrazoRetiro = this.lockCaja.newCondition();
         esperaBrazoRepone = this.lockCaja.newCondition();
-        cola = new LinkedBlockingQueue<Integer>();
+        cinta = new ArrayBlockingQueue<Integer>(2);
+        lockCrear = new ReentrantLock();
+        lockSacar = new ReentrantLock();
     }
     
     
     
-    public synchronized void cocinarPastel(int peso) {
+    public void cocinarPastel(int peso) {
+        lockCrear.lock();
         try {
-            System.out.println(Thread.currentThread().getName()+": creado pastel de "+peso);
-            cola.put(peso);
-            System.out.println("La cola ahora está formada por: "+cola.toString());
+            System.out.println(Thread.currentThread().getName()+": creando pastel de "+peso);
+            cinta.put(peso);
+            System.out.println("La cola ahora está formada por: "+cinta.toString());
         } catch (InterruptedException ex) {
             Logger.getLogger(Mostrador.class.getName()).log(Level.SEVERE, null, ex);
         }
+        lockCrear.unlock();
     }
     
-    public synchronized int tomarPastel() {
+    public int tomarPastel() {
+        lockSacar.lock();
         int salida = -1;
         try {
             //System.out.println("El frente es "+cola.peek());
-            salida = cola.take();
+            salida = cinta.take();
             System.out.println(Thread.currentThread().getName()+": Tomé pastel de "+salida+", intento soltarlo");
             //System.out.println("El frente es "+cola.peek());
         } catch (InterruptedException ex) {
             Logger.getLogger(Mostrador.class.getName()).log(Level.SEVERE, null, ex);
         }
+        lockSacar.unlock();
         return salida;
     }
     
