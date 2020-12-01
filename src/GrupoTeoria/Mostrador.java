@@ -27,7 +27,7 @@ public class Mostrador {
     private Condition esperaEmpSoltar;
     private Condition esperaBrazoRetiro;
     private Condition esperaBrazoRepone;
-    private BlockingQueue cola;
+    private BlockingQueue<Integer> cola;
 
     public Mostrador(int pesoMaxCaja, int capacidadCinta) {
         this.pesoMaxCaja = pesoMaxCaja;
@@ -38,25 +38,28 @@ public class Mostrador {
         esperaEmpSoltar = this.lockCaja.newCondition();
         esperaBrazoRetiro = this.lockCaja.newCondition();
         esperaBrazoRepone = this.lockCaja.newCondition();
-        cola = new LinkedBlockingQueue();
+        cola = new LinkedBlockingQueue<Integer>();
     }
     
     
     
-    public void cocinarPastel(int peso) {
+    public synchronized void cocinarPastel(int peso) {
         try {
-            cola.put(peso);
             System.out.println(Thread.currentThread().getName()+": creado pastel de "+peso);
+            cola.put(peso);
+            System.out.println("La cola ahora está formada por: "+cola.toString());
         } catch (InterruptedException ex) {
             Logger.getLogger(Mostrador.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public int tomarPastel() {
+    public synchronized int tomarPastel() {
         int salida = -1;
         try {
-            salida = (int) cola.take();
+            //System.out.println("El frente es "+cola.peek());
+            salida = cola.take();
             System.out.println(Thread.currentThread().getName()+": Tomé pastel de "+salida+", intento soltarlo");
+            //System.out.println("El frente es "+cola.peek());
         } catch (InterruptedException ex) {
             Logger.getLogger(Mostrador.class.getName()).log(Level.SEVERE, null, ex);
         }
