@@ -28,7 +28,7 @@ public class Empaquetador implements Runnable {
             } finally {
                 System.out.println(Thread.currentThread().getName()+": Intento tomar pastel");
                 peso = miMostrador.tomarPastel();
-                System.out.println(Thread.currentThread().getName()+": Tomé pastel, intento soltarlo");
+                System.out.println(Thread.currentThread().getName()+": Tomé pastel de "+peso+", intento soltarlo");
                 miMostrador.soltarPastel(peso);
                 //System.out.println(Thread.currentThread().getName()+": solté pastel");
             }
