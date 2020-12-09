@@ -14,82 +14,81 @@ import java.util.logging.Logger;
  * @author Martín
  */
 public class Taller {
-    private Semaphore semMangas;
-    private Semaphore semCuerpos;
-    private Semaphore semSueters;
-    private int numMaxMangas;//capacidad que soporta el canasto
-    private int numMaxCuerpos;//capacidad que soporta el canasto
-    private int numMaxSueters;//capacidad que soporta el canasto
+    private Semaphore semCrearManga;
+    private Semaphore semCrearCuerpo;
+    private Semaphore semCrearSueter;
+    private Semaphore semUsarManga;
+    private Semaphore semUsarCuerpo;
     private int cajasDeSueters;//cajas llenas de sueters
+    private int numMaxSueters;
     
     public Taller(int maxMangas, int maxCuerpos, int maxSueters) {
-        semMangas = new Semaphore(0);
-        semCuerpos = new Semaphore(0);
-        semSueters = new Semaphore(0);
-        numMaxMangas = maxMangas;
-        numMaxCuerpos = maxCuerpos;
+        semCrearManga = new Semaphore(maxMangas);
+        semCrearCuerpo = new Semaphore(maxCuerpos);
+        semCrearSueter = new Semaphore(maxSueters);
+        semUsarManga = new Semaphore(0);
+        semUsarCuerpo = new Semaphore(0);
         numMaxSueters = maxSueters;
     }
     
     private void espera() {
         try {
-            Thread.sleep(5000);
+            Thread.sleep(2000);
         } catch (InterruptedException ex) {
             Logger.getLogger(Taller.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     public void crearManga() {
-        while (semMangas.availablePermits() >= numMaxMangas) {
-            //Si el canasto está lleno, espera
-            System.out.println(Thread.currentThread().getName()+": canasto lleno, espera");
-            this.espera();
+        try {
+            //Toma un permiso, que simula crear y depositar una manga en el canasto
+            semCrearManga.acquire();
+            System.out.println(Thread.currentThread().getName()+": crea manga");
+            semUsarManga.release();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Taller.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //Libera un permiso, que simula una manga
-        System.out.println(Thread.currentThread().getName()+": crea manga");
-        semMangas.release();
     }
     
     public void crearCuerpo() {
-        while (semCuerpos.availablePermits() >= numMaxCuerpos) {
-            //Si el canasto está lleno, espera
-            System.out.println(Thread.currentThread().getName()+": canasto lleno, espera");
-            this.espera();
+        try {
+            //Toma un permiso, que simula crear y depositar un cuepo en el canasto
+            semCrearCuerpo.acquire();
+            System.out.println(Thread.currentThread().getName()+": crea cuerpo");
+            semUsarCuerpo.release();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Taller.class.getName()).log(Level.SEVERE, null, ex);
         }
-        //Libera un permiso, que simula un cuerpo
-        System.out.println(Thread.currentThread().getName()+": crea cuerpo");
-        semCuerpos.release();
     }
     
     public void crearSueter() {
-        while (semMangas.availablePermits() < 2 || semCuerpos.availablePermits() < 1) {
-            //Verifica que hayan dos mangas y un cuerpo. Si no hay, espera
-            System.out.println(Thread.currentThread().getName()+": no hay material, espera");
-            this.espera();
-        }
         try {
             //Toma las dos mangas y el cuerpo
-            semMangas.acquire(2);
-            semCuerpos.acquire(1);
+            semUsarManga.acquire(2);
+            semCrearManga.release(2);
+            semUsarCuerpo.acquire(1);
+            semCrearCuerpo.release();
         } catch (InterruptedException ex) {
             Logger.getLogger(Taller.class.getName()).log(Level.SEVERE, null, ex);
         }
         //Libera un permiso, que simula un sueter
-        System.out.println(Thread.currentThread().getName()+": crea sueter");
-        semSueters.release();
-        chequeoSueters();
+        if (semCrearSueter.tryAcquire()) {
+            System.out.println(Thread.currentThread().getName()+": crea sueter");
+        } else {
+            chequeoSueters();
+        }
     }
     
     private void chequeoSueters() {
         //Si se llena la caja, actualiza el contador de las mismas y la cantidad de permisos
-        if (semSueters.availablePermits() == this.numMaxSueters) {
-            this.cajasDeSueters++;
-            System.out.println("Se actualiza la cantidad de cajas de sueters");
-            try {
-                semSueters.acquire(numMaxSueters);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Taller.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        this.cajasDeSueters++;
+        System.out.println("Se actualiza la cantidad de cajas de sueters");
+        semCrearSueter.release(numMaxSueters);
+        try {
+            semCrearSueter.acquire();
+            System.out.println(Thread.currentThread().getName()+": crea sueter");
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Taller.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     

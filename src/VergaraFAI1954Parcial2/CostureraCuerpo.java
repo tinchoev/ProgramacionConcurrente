@@ -22,7 +22,7 @@ public class CostureraCuerpo implements Runnable {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(550);
+                Thread.sleep((long) (Math.random()+1)*2000);
                 miTaller.crearCuerpo();
             } catch (InterruptedException ex) {
                 Logger.getLogger(CostureraCuerpo.class.getName()).log(Level.SEVERE, null, ex);

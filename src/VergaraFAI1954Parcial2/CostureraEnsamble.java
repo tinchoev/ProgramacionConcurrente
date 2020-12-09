@@ -22,7 +22,7 @@ public class CostureraEnsamble implements Runnable {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(550);
+                Thread.sleep((long) (Math.random()+1)*5000);
                 miTaller.crearSueter();
             } catch (InterruptedException ex) {
                 Logger.getLogger(CostureraEnsamble.class.getName()).log(Level.SEVERE, null, ex);

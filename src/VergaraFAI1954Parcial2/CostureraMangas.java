@@ -22,7 +22,7 @@ public class CostureraMangas implements Runnable {
     public void run() {
         while (true) {
             try {
-                Thread.sleep(550);
+                Thread.sleep((long) (Math.random()+1)*2000);
                 miTaller.crearManga();
             } catch (InterruptedException ex) {
                 Logger.getLogger(CostureraMangas.class.getName()).log(Level.SEVERE, null, ex);
